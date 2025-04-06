@@ -1,0 +1,32 @@
+# Define the function assess_brain_score that takes a list of answers as input
+def assess_brain_score(answers):
+    # Create antecedent and consequent variables using scikit-fuzzy
+    answer = Antecedent(np.arange(0, 5, 1), 'answer')
+    score = Consequent(np.arange(0, 101, 1), 'score')
+
+    # Define membership functions for the 'answer' variable
+    answer['Never'] = trimf(answer.universe, [0, 0, 1])
+    answer['Almost Never'] = trimf(answer.universe, [0, 1, 2])
+    answer['Sometimes'] = trimf(answer.universe, [1, 2, 3])
+    answer['Fairly Often'] = trimf(answer.universe, [2, 3, 4])
+    answer['Very Often'] = trimf(answer.universe, [3, 4, 4])
+
+    # Define membership functions for the 'score' variable
+    score['Poor'] = trimf(score.universe, [0, 0, 50])
+    score['Good'] = trimf(score.universe, [0, 50, 100])
+
+    # Define fuzzy rules
+    rule1 = if answer is 'Never' or 'Almost Never' or 'Sometimes' then score is 'Good'
+    rule2 = if answer is 'Fairly Often' or 'Very Often' then score is 'Poor'
+
+    # Create the control system and simulation
+    health_score_ctrl = ControlSystem([rule1, rule2])
+    health_score = ControlSystemSimulation(health_score_ctrl)
+
+    # Pass user's answers to the fuzzy system and compute the brain health score
+    for each answer in answers:
+        input 'answer' in health_score = answer
+        compute health_score
+
+    # Compute the overall brain health score and return it
+    return output 'score' from health_score
