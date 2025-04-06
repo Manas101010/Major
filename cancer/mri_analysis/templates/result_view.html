@@ -1,77 +1,198 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analysis Result</title>
   <style>
-    body.bg {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+    :root {
+      --primary: #4a90e2;
+      --bg-light: #f4f7fa;
+      --text-dark: #333;
+      --text-gray: #555;
+      --accent: #eaf1fb;
+      --success: #d4edda;
+      --error: #f8d7da;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-light);
+      padding: 30px;
       display: flex;
       justify-content: center;
-      align-items: center;
-      margin: 0;
-      padding: 20px;
     }
+
     .container {
       background-color: #fff;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      max-width: 800px;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      max-width: 900px;
       width: 100%;
+      transition: 0.3s ease-in-out;
+    }
+
+    .container:hover {
+      transform: scale(1.01);
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-size: 28px;
       text-align: center;
     }
-    h2 {
-      color: #333;
-      margin-bottom: 20px;
+
+    .section {
+      margin-bottom: 25px;
+      text-align: center;
     }
+
+    .section h3 {
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+
+    .result-box {
+      display: inline-block;
+      padding: 10px 18px;
+      background: var(--accent);
+      color: var(--text-dark);
+      border-radius: 8px;
+      font-weight: 500;
+      margin: 5px;
+      transition: 0.2s ease-in-out;
+    }
+
+    .result-box:hover {
+      background-color: var(--primary);
+      color: #fff;
+    }
+
     p {
-      font-size: 16px;
-      line-height: 1.5;
-      color: #555;
-    }
-    .image-section {
-      margin-top: 20px;
-    }
-    .image-section h3 {
+      font-size: 17px;
+      color: var(--text-gray);
       margin-bottom: 10px;
-      color: #333;
     }
-    .mri-image, .segmentation-image {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
+
+    img {
+      width: 100%;
+      max-width: 200px;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      padding: 5px;
+      transition: transform 0.3s ease;
+    }
+
+    img:hover {
+      transform: scale(1.02);
+      border-color: var(--primary);
+    }
+
+    .image-section {
+      margin: 25px auto;
+    }
+
+    .side-by-side {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .side-by-side div {
+      text-align: center;
+    }
+
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
-<body class="bg">
+
+<body>
   <div class="container">
-    <h2>Analysis Result</h2>
+    <h2>🧠 MRI Tumor Analysis Result</h2>
 
-    <!-- Tumor Detection Status -->
-    <p><strong>Tumor Detected:</strong> {{ analysis_result.tumor_detected|yesno:"Yes,No" }}</p>
-
-    <!-- Detailed Analysis -->
-    <p><strong>Detailed Analysis:</strong> {{ analysis_result.detailed_analysis }}</p>
-
-    <!-- Display the uploaded MRI image -->
     <div class="image-section">
-      <h3>Original MRI Image</h3>
-      <img src="{{ analysis_result.mri_image.image.url }}" alt="Uploaded MRI Image" class="mri-image">
+      <h3>📥 Original MRI Image</h3>
+      <img src="{{ analysis_result.mri_image.image.url }}" alt="Uploaded MRI Image">
     </div>
 
-    <!-- Display the Segmentation Result if available -->
-    {% if analysis_result.segmented_result %}
+    <div class="section">
+      <p><strong>Tumor Detected:</strong>
+        <span class="result-box">
+          {{ analysis_result.tumor_detected|yesno:"Yes,No" }}
+        </span>
+      </p>
+
+      <p><strong>Predicted Tumor Type:</strong>
+        <span class="result-box">{{ analysis_result.detailed_analysis }}</span>
+      </p>
+
+      {% if analysis_result.tumor_detected %}
+      <p><strong>Tumor Size:</strong>
+        <span class="result-box">{{ analysis_result.tumor_size_px }} pixels</span>
+        <span class="result-box">{{ analysis_result.tumor_size_mm2 }} mm²</span>
+      </p>
+      {% endif %}
+    </div>
+
+    {% if analysis_result.segmented_result or analysis_result.bounded_box_image %}
     <div class="image-section">
-      <h3>Segmentation Image</h3>
-      <img src="{{ analysis_result.segmented_result.url }}" alt="Segmentation Result" class="segmentation-image">
+      <h3>🧪 Segmentation & 🔲 Bounded Box</h3>
+      <div class="side-by-side">
+        {% if analysis_result.segmented_result %}
+        <div>
+          <img src="{{ analysis_result.segmented_result.url }}" alt="Segmentation Result">
+          <p><strong>Segmented Mask</strong></p>
+        </div>
+        {% endif %}
+
+        {% if analysis_result.bounded_box_image %}
+        <div>
+          <img src="{{ analysis_result.bounded_box_image.url }}" alt="Bounded Box Image">
+          <p><strong>Bounding Box</strong></p>
+        </div>
+        {% endif %}
+      </div>
     </div>
     {% else %}
-    <p>No segmentation performed or utkarsh not available.</p>
+    <p class="section">No segmentation performed.</p>
     {% endif %}
+
+    {% if analysis_result.tumor_detected %}
+    <div style="margin-top: 20px;">
+      <a href="{% url 'predict_tumor_stage' %}?tumor_type={{ analysis_result.detailed_analysis }}&tumor_size_cm={{ analysis_result.tumor_size_mm2|floatformat:2 }}"
+        class="result-box" style="text-decoration: none; background-color: var(--primary); color: white;">
+        🧬 Predict Tumor Stage
+      </a>
+    </div>
+    {% endif %}
+
   </div>
 </body>
+
 </html>

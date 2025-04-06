@@ -2,12 +2,13 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import os
+from django.conf import settings
 
 # Define your categories
 categories = ['glioma', 'meningioma', 'notumor', 'pituitary']
 
 # Load the classification model
-model_path = os.path.join(os.path.dirname(__file__), 'ml_models', 'btc.keras')
+model_path = os.path.join(settings.BASE_DIR, 'ml_models', 'btc.keras')
 
 # Load the model
 model = tf.keras.models.load_model(model_path)  
