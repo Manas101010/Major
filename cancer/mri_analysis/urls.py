@@ -6,4 +6,5 @@ urlpatterns = [
     path('result/<int:pk>/', views.result_view, name='result_view'),  # View results
     path('', views.brain_score_view, name='brain_score'),
     path('predict/', views.predict_tumor_stage, name='predict_tumor_stage'),
+    path('generate-pdf/', views.generate_pdf, name='generate_pdf'),
 ]

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MRI Image Analysis</title>
   <style>
     :root {
@@ -10,8 +10,7 @@
       --primary-hover: #0056b3;
       --success: #28a745;
       --success-hover: #218838;
-      --bg-light: #f4f4f4;
-      --text-dark: #333;
+      --text-dark: #fff;
     }
 
     * {
@@ -22,33 +21,79 @@
 
     body {
       font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background: var(--bg-light);
+      background: linear-gradient(270deg, #0f2027, #203a43, #2c5364);
+      background-size: 600% 600%;
+      animation: gradientBG 15s ease infinite;
+      overflow: hidden;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: pulse 4s infinite linear;
+      z-index: 0;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+      100% { opacity: 0.3; }
     }
 
     .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
       text-align: center;
       width: 100%;
       max-width: 420px;
-      transition: 0.3s ease;
-      animation: fadeIn 0.8s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      color: var(--text-dark);
     }
 
     h2 {
-      color: var(--text-dark);
+      margin-bottom: 10px;
+      font-size: 24px;
+      color: #ffffff;
+    }
+
+    .ai-tag {
+      background: rgba(0, 123, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 12px;
+      display: inline-block;
+      font-size: 12px;
       margin-bottom: 20px;
+      color: #aad4ff;
+      letter-spacing: 1px;
+    }
+
+    .brain-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      animation: glow 2s infinite ease-in-out;
+    }
+
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 8px #00ffff; }
+      50% { text-shadow: 0 0 16px #00ffff; }
     }
 
     input[type="file"] {
@@ -63,11 +108,12 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: 500;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     .upload-label:hover {
       background-color: var(--primary-hover);
+      transform: scale(1.05);
     }
 
     .analyze-btn {
@@ -82,11 +128,12 @@
       font-size: 16px;
       font-weight: bold;
       margin-top: 20px;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     .analyze-btn:hover {
       background-color: var(--success-hover);
+      transform: scale(1.05);
     }
 
     .preview {
@@ -107,7 +154,7 @@
     .file-name {
       margin-top: 10px;
       font-size: 14px;
-      color: #555;
+      color: #ddd;
       font-style: italic;
     }
 
@@ -121,10 +168,14 @@
     }
   </style>
 </head>
-
 <body>
+
+  <div class="particles"></div>
+
   <div class="container">
-    <h2>🧠 Upload MRI for Analysis</h2>
+    <div class="brain-icon">🧠</div>
+    <div class="ai-tag">AI Powered Analysis</div>
+    <h2>Upload MRI for Analysis</h2>
 
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
@@ -156,5 +207,6 @@
       }
     }
   </script>
+
 </body>
 </html>

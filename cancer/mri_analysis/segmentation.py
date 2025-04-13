@@ -79,43 +79,33 @@ def visualize_segmentation(image, mask_pred):
 
 
 def process_uploaded_image(uploaded_file):
-    """Handle uploaded image, run segmentation, visualize, and return results."""
     # Save uploaded file
     file_path = default_storage.save(f'uploads/{uploaded_file.name}', uploaded_file)
     absolute_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
-    # Run segmentation and get predicted + binary mask
     pred_mask, binary_mask = run_segmentation(absolute_path)
 
-    # Load and resize original image
     original_img = cv2.imread(absolute_path)
     original_img = cv2.resize(original_img, image_size)
 
-    # Visualize segmentation and get two output images
     image_with_box, mask_gray = visualize_segmentation(original_img, pred_mask)
 
-    # Save visualization images to media folders
     filename = os.path.splitext(os.path.basename(uploaded_file.name))[0]
+    box_name = f"{filename}_box.jpg"
+    mask_name = f"{filename}_mask.jpg"
 
-    # Create folders
-    box_dir = os.path.join(settings.MEDIA_ROOT, 'with_bounding_box')
-    mask_dir = os.path.join(settings.MEDIA_ROOT, 'tumor_mask')
-    os.makedirs(box_dir, exist_ok=True)
-    os.makedirs(mask_dir, exist_ok=True)
+    box_rel_path = os.path.join('with_bounding_box', box_name)
+    mask_rel_path = os.path.join('tumor_mask', mask_name)
 
-    # Define output paths
-    image_with_box_path = os.path.join(box_dir, f"{filename}_box.jpg")
-    tumor_mask_path = os.path.join(mask_dir, f"{filename}_mask.jpg")
+    box_abs_path = os.path.join(settings.MEDIA_ROOT, box_rel_path)
+    mask_abs_path = os.path.join(settings.MEDIA_ROOT, mask_rel_path)
 
-    # Save images
-    cv2.imwrite(image_with_box_path, image_with_box)
-    cv2.imwrite(tumor_mask_path, mask_gray)
+    os.makedirs(os.path.dirname(box_abs_path), exist_ok=True)
+    os.makedirs(os.path.dirname(mask_abs_path), exist_ok=True)
 
-    # Convert to relative MEDIA_URL paths for web use
-    image_with_box_url = os.path.join(settings.MEDIA_URL, 'with_bounding_box', f"{filename}_box.jpg")
-    tumor_mask_url = os.path.join(settings.MEDIA_URL, 'tumor_mask', f"{filename}_mask.jpg")
+    cv2.imwrite(box_abs_path, image_with_box)
+    cv2.imwrite(mask_abs_path, mask_gray)
 
-    # Calculate tumor size using the predicted mask
     tumor_pixels, tumor_size_mm2 = calculate_tumor_size(pred_mask)
 
-    return image_with_box_url, tumor_mask_url, tumor_pixels, tumor_size_mm2
+    return box_rel_path, mask_rel_path, tumor_pixels, tumor_size_mm2
