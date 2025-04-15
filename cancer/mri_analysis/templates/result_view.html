@@ -8,16 +8,19 @@
   <title>MRI Analysis Result</title>
   <style>
     :root {
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --bg-light: #f0f7ff;
+      --primary: #5a67d8;
+      /* Indigo-600 */
+      --primary-hover: #4c51bf;
+      /* Indigo-700 */
+      --bg-light: #f3f4ff;
       --text-dark: #1e293b;
       --text-gray: #64748b;
-      --accent: #dbeafe;
+      --accent: #e0e7ff;
+      /* Light indigo background */
       --success: #bbf7d0;
       --warning: #fef3c7;
       --error: #fee2e2;
-      --card-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.05);
+      --card-shadow: 0 10px 25px -5px rgba(90, 103, 216, 0.1), 0 8px 10px -6px rgba(90, 103, 216, 0.05);
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -52,24 +55,40 @@
     }
 
     .container::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 100%);
-    }
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary) 0%, #7f9cf5 100%);
+}
+
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      }
     }
 
     .container:hover {
@@ -259,8 +278,7 @@
       align-items: center;
       gap: 10px;
       padding: 14px 28px;
-      background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 100%);
-      color: white;
+      background: linear-gradient(90deg, var(--primary) 0%, #7f9cf5 100%);
       border-radius: 12px;
       text-decoration: none;
       font-weight: 600;
@@ -366,11 +384,10 @@
 
     {% if analysis_result.tumor_detected %}
     <div class="btn-container">
-      <a href="{% url 'predict_tumor_stage' %}?result_id={{ analysis_result.id }}"
-        class="btn-primary">
+      <a href="{% url 'predict_tumor_stage' %}?result_id={{ analysis_result.id }}" class="btn-primary">
         🧬 Predict Tumor Stage
       </a>
-    </div>    
+    </div>
     {% endif %}
   </div>
 </body>

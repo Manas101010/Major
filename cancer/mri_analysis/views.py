@@ -101,6 +101,11 @@ def result_view(request, pk):
 
     return render(request, 'result_view.html', {'analysis_result': analysis_result})
 
+def landingPage(request):
+    return render(request, 'index.html')
+
+def signin(request): 
+    return render(request, 'signin.html')
 def predict_tumor_stage(request):
     prediction = None
     analysis_result = None
